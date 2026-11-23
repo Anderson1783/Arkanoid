@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tarjeta de Presentación Creativa con Arkanoid</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+  body {
+    background: #0d0d0d;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    user-select: none;
+  }
+
+  .card-container {
+    perspective: 1200px;
+    width: 340px;
+    height: 460px;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    border-radius: 1.2rem;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 15px 40px rgba(255, 0, 160, 0.6);
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff0066 0%, #ffcc00 100%);
+  }
+
+  .card.is-flipped {
+    transform: rotateY(180deg);
+    box-shadow: 0 15px 50px rgba(0, 255, 204, 0.7);
+  }
+
+  .side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 1.2rem;
+    backface-visibility: hidden;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Frente */
+  .front {
+    background: linear-gradient(45deg, #ff0066, #ffcc00);
+    padding: 2rem;
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: inset 0 0 80px rgba(255, 255, 255, 0.15);
+  }
+
+  .front h1 {
+    font-size: 2.6rem;
+    margin-bottom: 0.3em;
+    letter-spacing: 1.2px;
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.6);
+  }
+  .front h2 {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 1em;
+    font-style: italic;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.25);
+  }
+  .front p {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0.3em 0;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  }
+  
+  .info-footer {
+    margin-top: auto;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    font-style: italic;
+  }
+
+  /* Atrás */
+  .back {
+    background: linear-gradient(45deg, #00ffa8, #00aaff);
+    transform: rotateY(180deg);
+    padding: 20px 15px 15px;
+  }
+
+  #arkanoid {
+    background: #111;
+    border-radius: 0 0 1.2rem 1.2rem;
+    box-shadow: 0 0 12px #00ffa8aa;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .player-input-container {
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  label {
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    font-size: 1rem;
+    color: #fff;
+    text-shadow: 0 0 8px #00ffaa88;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  input[type="text"] {
+    padding: 7px 15px;
+    width: 80%;
+    max-width: 250px;
+    font-size: 1rem;
+    border-radius: 1.1rem;
+    border: none;
+    outline: none;
+    box-shadow: 0 0 10px #00ffaa88;
+    background-color: #222;
+    color: #00ffaa;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+  }
+  input[type="text"]::placeholder {
+    color: #00ffaaaa;
+  }
+  .start-btn {
+    margin-top: 10px;
+    padding: 8px 26px;
+    background: #ff0066;
+    border: none;
+    border-radius: 30px;
+    color: white;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0 15px #ff0077aa;
+    transition: background-color 0.3s ease;
+  }
+  .start-btn:hover {
+    background-color: #ff3399;
+  }
+
+  .scoreboard {
+    margin-top: 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #00ffcc;
+    text-shadow: 0 0 8px #00ffccaa;
+  }
+
+  @media (max-width: 400px) {
+    .card-container {
+      width: 90vw;
+      height: 120vw;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="card-container" title="Haz clic para girar y jugar">
+  <div id="card" class="card">
+    <div class="side front">
+      <h1>Anderson Dorado</h1>
+      <h2>Desarrollador Web Creativo</h2>
+      <p>Email: anderson.dorado@example.com</p>
+      <p>Tel: +57 312 987 6543</p>
+      <p><em>"Innovando con código y pasión"</em></p>
+      <div class="info-footer">
+        Haz clic para girar y jugar Arkanoid
+      </div>
+    </div>
+
+    <div class="side back">
+      <div class="player-input-container">
+        <label for="playerName">Nombre del jugador:</label>
+        <input type="text" id="playerName" maxlength="15" placeholder="Tu nombre aquí" />
+        <button class="start-btn" id="startGameBtn">Iniciar Juego</button>
+      </div>
+      <canvas id="arkanoid" width="320" height="400"></canvas>
+      <div class="scoreboard" id="scoreBoard"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const card = document.getElementById('card');
+  const canvas = document.getElementById('arkanoid');
+  const ctx = canvas.getContext('2d');
+  const startGameBtn = document.getElementById('startGameBtn');
+  const playerInput = document.getElementById('playerName');
+  const scoreBoard = document.getElementById('scoreBoard');
+
+  let gameStarted = false;
+  let animationId;
+  let playerName = "Jugador";
+
+  // Variables juego
+  const paddleHeight = 10;
+  const paddleWidth = 90;
+  let paddleX = (canvas.width - paddleWidth) / 2;
+
+  const ballRadius = 9;
+  let x = canvas.width / 2;
+  let y = canvas.height - 40;
+  let dx = 4;
+  let dy = -4;
+
+  const brickRowCount = 6;
+  const brickColumnCount = 7;
+  const brickWidth = 40;
+  const brickHeight = 16;
+  const brickPadding = 6;
+  const brickOffsetTop = 38;
+  const brickOffsetLeft = 26;
+
+  let score = 0;
+
+  // Ladrillos
+  let bricks = [];
+
+  function initBricks() {
+    bricks = [];
+    for(let c=0; c<brickColumnCount; c++) {
+      bricks[c] = [];
+      for(let r=0; r<brickRowCount; r++) {
+        bricks[c][r] = { x: 0, y: 0, status: 1 };
+      }
+    }
+  }
+
+  initBricks();
+
+  // Controles paddle
+  let rightPressed = false;
+  let leftPressed = false;
+
+  // Dibujo elementos
+  function drawBall() {
+    const gradient = ctx.createRadialGradient(x, y, ballRadius/2, x, y, ballRadius);
+    gradient.addColorStop(0, '#ff3399');
+    gradient.addColorStop(1, '#a30054');
+    
+    ctx.beginPath();
+    ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+    ctx.fillStyle = gradient;
+    ctx.shadowColor = '#ff66bb';
+    ctx.shadowBlur = 12;
+    ctx.fill();
+    ctx.closePath();
+    ctx.shadowBlur = 0;
+  }
+
+  function drawPaddle() {
+    ctx.beginPath();
+    ctx.fillStyle = '#00ffcc';
+    ctx.shadowColor = '#00ffccaa';
+    ctx.shadowBlur = 16;
+    ctx.roundRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight, 8);
+    ctx.fill();
+    ctx.closePath();
+    ctx.shadowBlur = 0;
+  }
+  
+  // Rounded rectangle extension for canvas (since some browsers support now)
+  if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+      if (typeof r === 'number') {
+        r = {tl: r, tr:r, br:r, bl:r};
+      } else {
+        const defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+        for(let side in defaultRadius) {
+          r[side] = r[side] || defaultRadius[side];
+        }
+      }
+      this.beginPath();
+      this.moveTo(x + r.tl, y);
+      this.lineTo(x + w - r.tr, y);
+      this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+      this.lineTo(x + w, y + h - r.br);
+      this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+      this.lineTo(x + r.bl, y + h);
+      this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+      this.lineTo(x, y + r.tl);
+      this.quadraticCurveTo(x, y, x + r.tl, y);
+      this.closePath();
+      return this;
+    }
+  }
+
+  function drawBricks() {
+    for(let c=0; c<brickColumnCount; c++) {
+      for(let r=0; r<brickRowCount; r++) {
+        if(bricks[c][r].status === 1) {
+          let brickX = (c*(brickWidth + brickPadding)) + brickOffsetLeft;
+          let brickY = (r*(brickHeight + brickPadding)) + brickOffsetTop;
+          bricks[c][r].x = brickX;
+          bricks[c][r].y = brickY;
+
+          const brickGradient = ctx.createLinearGradient(brickX, brickY, brickX, brickY + brickHeight);
+          brickGradient.addColorStop(0, '#ff00cc');
+          brickGradient.addColorStop(1, '#ff66ff');
+
+          ctx.beginPath();
+          ctx.roundRect(brickX, brickY, brickWidth, brickHeight, 4);
+          ctx.fillStyle = brickGradient;
+          ctx.shadowColor = '#ff33ccaa';
+          ctx.shadowBlur = 14;
+          ctx.fill();
+          ctx.closePath();
+          ctx.shadowBlur = 0;
+        }
+      }
+    }
+  }
+
+  function drawScore() {
+    ctx.font = '20px Poppins, Arial';
+    ctx.fillStyle = '#00ffcc';
+    ctx.textShadow = '0 0 8px #00ffcc99';
+    ctx.fillText(`${playerName}: ${score}`, 10, 28);
+  }
+
+  function collisionDetection() {
+    for(let c=0; c<brickColumnCount; c++) {
+      for(let r=0; r<brickRowCount; r++) {
+        const b = bricks[c][r];
+        if(b.status === 1) {
+          if(x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+            dy = -dy;
+            b.status = 0;
+            score++;
+            if(score === brickRowCount * brickColumnCount) {
+              alert(`¡Felicidades ${playerName}! Ganaste con puntaje ${score}`);
+              resetGame();
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBricks();
+    drawBall();
+    drawPaddle();
+    drawScore();
+    collisionDetection();
+
+    if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+      dx = -dx;
+    }
+    if(y + dy < ballRadius) {
+      dy = -dy;
+    } else if(y + dy > canvas.height - ballRadius - paddleHeight - 10) {
+      if(x > paddleX && x < paddleX + paddleWidth) {
+        dy = -dy;
+        // Un poco de variación horizontal para más dinamismo
+        dx += (Math.random() - 0.5) * 1.5;
+      } else if(y + dy > canvas.height - ballRadius) {
+        alert(`Juego terminado, ${playerName}. Puntaje final: ${score}`);
+        resetGame();
+        return;
+      }
+    }
+
+    x += dx;
+    y += dy;
+
+    if(rightPressed && paddleX < canvas.width - paddleWidth) {
+      paddleX += 8;
+    }
+    if(leftPressed && paddleX > 0) {
+      paddleX -= 8;
+    }
+
+    animationId = requestAnimationFrame(draw);
+  }
+
+  // Eventos teclado
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Right" || e.key === "ArrowRight") {
+      rightPressed = true;
+    }
+    else if(e.key === "Left" || e.key === "ArrowLeft") {
+      leftPressed = true;
+    }
+  });
+
+  document.addEventListener("keyup", (e) => {
+    if(e.key === "Right" || e.key === "ArrowRight") {
+      rightPressed = false;
+    }
+    else if(e.key === "Left" || e.key === "ArrowLeft") {
+      leftPressed = false;
+    }
+  });
+
+  // Controlar giro de la tarjeta y activar juego
+  card.addEventListener('click', () => {
+    if(gameStarted) return;  // Evita girar mientras juego activo
+
+    card.classList.toggle('is-flipped');
+    if(card.classList.contains('is-flipped')) {
+      // En back, foco input
+      playerInput.focus();
+    }
+  });
+
+  // Botón para comenzar el juego
+  startGameBtn.addEventListener('click', () => {
+    const val = playerInput.value.trim();
+    playerName = val !== '' ? val : "Jugador";
+    score = 0;
+    paddleX = (canvas.width - paddleWidth) / 2;
+    x = canvas.width / 2;
+    y = canvas.height - 40;
+    dx = 4 * (Math.random() > 0.5 ? 1 : -1);
+    dy = -4;
+    initBricks();
+    gameStarted = true;
+    playerInput.disabled = true;
+    startGameBtn.disabled = true;
+    scoreBoard.textContent = '';
+    draw();
+  });
+
+  function resetGame() {
+    gameStarted = false;
+    playerInput.disabled = false;
+    startGameBtn.disabled = false;
+    scoreBoard.textContent = '';
+    card.classList.remove('is-flipped');
+    cancelAnimationFrame(animationId);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+</script>
+
+</body>
+</html>
